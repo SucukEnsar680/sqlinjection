@@ -1,27 +1,37 @@
+import anvil.tables as tables
+import anvil.tables.query as q
+from anvil.tables import app_tables
+import anvil.files
+from anvil.files import data_files
 import anvil.server
 import sqlite3
-def init_db():
-  adminname = 'davidProf'
-  adminpwd = 'kannNichtCoden'
-  accountNumbers = [4509693768556941, 4509693768521313, 69826208285551123123]
+
+adminname = 'davidProf'
+adminpwd = 'kannNichtCoden'
+
+@anvil.server.callable
+def login(username, password):
+  conn = sqlite3.connect(data_files["users.db"])
+  cursor = conn.cursor()
+  query = f"SELECT username FROM Users WHERE username = '{username}' AND password = '{password}'"
+  try:
+      cursor = cursor.execute(query)
+  except Exception as e:
+      return f"Login failed!<br>{query}<br>{e}"
+
+  user = cursor.fetchone()
+
+  accountNo = None
+  if user and username == user[0]:
+      accountNo = cursor.execute(f"SELECT AccountNo FROM users WHERE username = '{username}'").fetchone()
+  if user and username == user[0] and username == adminname:
+      query = f"SELECT password FROM Users WHERE username = '{username}' AND password = '{password}'"
+      pw = cursor.execute(query).fetchone()
+      if pw and password == pw[0] and password == adminpwd:
+          return "Congratulations you finished the task!"
   
-  db = data_files["datenbank.db"]
-  cursor = db.cursor()
-  cursor.execute('''CREATE TABLE IF NOT EXISTS Users (
-                          AccountNo INTEGER,
-                          username TEXT,
-                          password TEXT
-                        )''')
-  cursor.execute('''CREATE TABLE IF NOT EXISTS Balances (
-                              AccountNo INTEGER,
-                              balance INTEGER
-                            )''')
-  # Insert sample data
-  cursor.execute(f"INSERT INTO Users (AccountNo, username, password) VALUES ({accountNumbers[0]}, '{adminname}', '{adminpwd}')")
-  cursor.execute(f"INSERT INTO Users (AccountNo, username, password) VALUES ({accountNumbers[1]}, 'frodo', 'DerEineRing')")
-  cursor.execute(f"INSERT INTO Users (AccountNo, username, password) VALUES ({accountNumbers[2]}, 'glorfindel', 'Unsterblicher')")
+  if user:
+      return accountNo
+  else:
+      return f"Login failed!<br>{query}"
   
-  cursor.execute(f"INSERT INTO Balances (AccountNo, balance) VALUES ({accountNumbers[0]}, 5000)")
-  cursor.execute(f"INSERT INTO Balances (AccountNo, balance) VALUES ({accountNumbers[1]}, 1500)")
-  cursor.execute(f"INSERT INTO Balances (AccountNo, balance) VALUES ({accountNumbers[2]}, 7500)")
-  db.commit()

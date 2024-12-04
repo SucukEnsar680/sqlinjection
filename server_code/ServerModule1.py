@@ -20,7 +20,7 @@ def login(username, password):
       return f"Login failed!<br>{query}<br>{e}"
 
   user = cursor.fetchone()
-
+  login = False 
   accountNo = None
   if user and username == user[0]:
       accountNo = cursor.execute(f"SELECT AccountNo FROM users WHERE username = '{username}'").fetchone()
@@ -28,10 +28,11 @@ def login(username, password):
       query = f"SELECT password FROM Users WHERE username = '{username}' AND password = '{password}'"
       pw = cursor.execute(query).fetchone()
       if pw and password == pw[0] and password == adminpwd:
-          return "Congratulations you finished the task!"
+          return "Congratulations you finished the task!", login
   
   if user:
-      return accountNo
+    login = True
+    return accountNo, login
   else:
-      return f"Login failed!<br>{query}"
+      return f"Login failed!<br>{query}", login
   

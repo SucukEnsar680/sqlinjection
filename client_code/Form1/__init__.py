@@ -18,5 +18,7 @@ class Form1(Form1Template):
     username = self.username.text
     password = self.password.text
 
-    ergebnis = anvil.server.call('login', username, password)
+    ergebnis, login = anvil.server.call('login', username, password)
     print(ergebnis)
+    if (login == True):
+      open_form('login_Page')

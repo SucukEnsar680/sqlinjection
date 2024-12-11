@@ -35,4 +35,12 @@ def login(username, password):
     return accountNo, login
   else:
       return f"Login failed!<br>{query}", login
+
+@anvil.server.callable
+def get_accNo(username, password):
+  conn = sqlite3.connect(data_files["users.db"])
+  cursor = conn.cursor()
+  query = f"SELECT username FROM Users WHERE username = '{username}' AND password = '{password}'"
+  accNo = list(cursor.execute(query))
+  conn.close()
   

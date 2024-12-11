@@ -19,6 +19,17 @@ class Form1(Form1Template):
     password = self.password.text
 
     ergebnis, login = anvil.server.call('login', username, password)
+    accNo = anvil.server.call('get_accNo', username, password)
     print(ergebnis)
-    if (login == True):
-      open_form('login_Page')
+    
+    
+    
+    if login:
+        if accNo != None:
+          
+          print("Hallo")
+          print(anvil.js.window.location.href)
+          anvil.js.window.location.href = anvil.js.window.location.href + "?AccountNo=" + str(accNo[0])
+        open_form('login_Page')
+    
+      

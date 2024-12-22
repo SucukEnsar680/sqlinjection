@@ -11,7 +11,7 @@ adminpwd = 'kannNichtCoden'
 
 @anvil.server.callable
 def login(username, password):
-  conn = sqlite3.connect(data_files["users.db"])
+  conn = sqlite3.connect(data_files["users1.db"])
   cursor = conn.cursor()
   query = f"SELECT username FROM Users WHERE username = '{username}' AND password = '{password}'"
   try:
@@ -38,9 +38,9 @@ def login(username, password):
 
 @anvil.server.callable
 def get_accNo(username, password):
-  conn = sqlite3.connect(data_files["users.db"])
+  conn = sqlite3.connect(data_files["users1.db"])
   cursor = conn.cursor()
-  cursor.execute(f"SELECT AccountNo FROM Users WHERE username = {username} AND password = {password}")
+  cursor.execute(f"SELECT AccountNo FROM Users WHERE username = '{username}' AND password = '{password}'")
   result = cursor.fetchone()
   if (result):
     return result[0]
@@ -59,7 +59,7 @@ def get_accountNumber_from_query(url):
 
 @anvil.server.callable
 def get_username_from_id(id):
-  con = sqlite3.connect(data_files["users.db"])
+  con = sqlite3.connect(data_files["users1.db"])
   cursor = con.cursor()
   query = "SELECT username FROM Users WHERE AccountNo = ?"
   res = list(cursor.execute(query, (id,)))

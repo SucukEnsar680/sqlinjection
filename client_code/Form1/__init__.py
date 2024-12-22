@@ -4,6 +4,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.server
+import re
 
 
 class Form1(Form1Template):
@@ -15,8 +16,16 @@ class Form1(Form1Template):
     
 
   def button_1_click(self, **event_args):
-    username = self.username.text
-    password = self.password.text
+    if self.radio_button_1.selected:
+      if re.search(r"[#@!-'']", self.username.text) or re.search(r"[#@!-'']", self.password.text):
+        alert("Keine SonderZeichen!")
+      else:
+        username = self.username.text
+        password = self.password.text
+
+    else:
+      username = self.username.text
+      password = self.password.text
 
     ergebnis, login = anvil.server.call('login', username, password)
     accNo = anvil.server.call('get_accNo', username, password)
@@ -28,8 +37,10 @@ class Form1(Form1Template):
         if accNo != None:
           
           print("Hallo")
-          print(anvil.js.window.location.href)
-          anvil.js.window.location.href = anvil.js.window.location.href + "?AccountNo=" + str(accNo[0])
+
         open_form('login_Page')
+
+  
+    
     
       
